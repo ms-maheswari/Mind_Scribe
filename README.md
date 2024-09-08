@@ -89,7 +89,6 @@ npm start
 Frontend (Client)
 
 ```bash
-Copy code
 cd client
 npm start
 ```
