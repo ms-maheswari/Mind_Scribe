@@ -34,7 +34,7 @@ const Home = () => {
   const getAllNotes = async () => {
     try {
       // const token = JSON.parse(localStorage.getItem("currentUser"))?.token;
-      const token = Cookies.get('acces_token');
+      const token = Cookies.get('access_token');
       console.log("Token being sent:", token);
       const res = await axios.get(`${apiUrl}/api/note/all`, {
         headers:{
