@@ -25,28 +25,29 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
   origin: 'https://mind-scribe-phi.vercel.app',  // Your frontend URL
-  credentials: true  // Allows sending of cookies
+  credentials: true,  // Allows sending of cookies
+  allowedHeaders: ['Content-Type', 'Authorization'] 
 }));
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-  // Retrieve the token from the cookies (server-side)
-  const token = req.cookies.access_token;
-  console.log("Token received:", token);  // Debugging line to check if token is received
-
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, message: 'Unauthorized, token missing' });
   }
+
+  const token = authHeader.split(' ')[1];  // Extract the token from the 'Bearer <token>' format
+  console.log("Token received:", token);  // Log token for debugging
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      console.error("Token verification error:", err);  // Log error if token verification fails
-      return res.status(403).json({ success: false, message: 'Forbidden' });
+      return res.status(403).json({ success: false, message: 'Token is not valid' });
     }
     req.user = user;
     next();
   });
 };
+
 
 
 // Error handler function to create error objects
