@@ -8,59 +8,60 @@ import Navbar from "../components/Navbar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import apiUrl from "../api";
+
 const Home = () => {
-    const [userInfo, setUserInfo] = useState(null);
-    const [allNotes, setAllNotes] = useState([]);
-    const [isSearch, setIsSearch] = useState(false);
-    const [error, setError] = useState(null); 
-    
-    const navigate = useNavigate();
-    const [openAddEditModal, setOpenAddEditModal] = useState({
-      isShown: false,
-      type: "add",
-      data: null,
-    });
-  
-    useEffect(() => {
-      const storedUser = JSON.parse(localStorage.getItem("currentUser"));
-      if (storedUser) {
-        setUserInfo(storedUser);
-      }
-    }, []);
-    
-  
+  const [userInfo, setUserInfo] = useState(null);
+  const [allNotes, setAllNotes] = useState([]);
+  const [isSearch, setIsSearch] = useState(false);
+  const [error, setError] = useState(null); 
+  const navigate = useNavigate();
+  const [openAddEditModal, setOpenAddEditModal] = useState({
+    isShown: false,
+    type: "add",
+    data: null,
+  });
+
+  // Fetch the user info from localStorage
   useEffect(() => {
-    
+    const storedUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (storedUser) {
+      setUserInfo(storedUser);
+    }
+  }, []);
+
+  // Function to get all notes from the server
   const getAllNotes = async () => {
     try {
       const res = await axios.get(`${apiUrl}/api/note/all`, {
-        withCredentials: true,
+        withCredentials: true, // Ensures cookies are sent
       });
       setAllNotes(res.data.notes);
-
     } catch (error) {
       console.error("Fetch Notes Error:", error.response?.data || error.message);
       setError(error.response?.data?.message || error.message);
     }
   };
+
+  // Fetch notes on component load
+  useEffect(() => {
     getAllNotes();
-  }, []); 
+  }, []);
+
+  // Handle note editing
   const handleEdit = (noteDetails) => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
   };
 
+  // Delete a note
   const deleteNote = async (data) => {
     const noteId = data._id;
-
     try {
-      const res = await axios.delete(
-        `${apiUrl}/api/note/delete/` + noteId,
-        { withCredentials: true }
-      );
-
+      const res = await axios.delete(`${apiUrl}/api/note/delete/${noteId}`, {
+        withCredentials: true,
+      });
       if (res.data.success) {
         toast.success(res.data.message);
-        await getAllNotes();
+        getAllNotes(); // Fetch updated notes after deletion
       } else {
         toast.error(res.data.message);
       }
@@ -69,13 +70,13 @@ const Home = () => {
     }
   };
 
+  // Search for notes
   const onSearchNote = async (query) => {
     try {
       const res = await axios.get(`${apiUrl}/api/note/search`, {
         params: { query },
         withCredentials: true,
       });
-
       if (res.data.success) {
         setIsSearch(true);
         setAllNotes(res.data.notes);
@@ -87,33 +88,31 @@ const Home = () => {
     }
   };
 
+  // Clear the search and fetch all notes again
   const handleClearSearch = () => {
     setIsSearch(false);
-    getAllNotes();
+    getAllNotes(); // Fetch all notes again after clearing the search
   };
 
+  // Update the pin status of a note
   const updateIsPinned = async (noteData) => {
     const noteId = noteData._id;
-  
     try {
       const res = await axios.put(
         `${apiUrl}/api/note/update-note-pinned/${noteId}`,
         { isPinned: !noteData.isPinned },
-        { withCredentials: true } // This ensures cookies are sent with the request
+        { withCredentials: true }
       );
-  
       if (res.data.success) {
         toast.success(res.data.message);
-        await getAllNotes();
+        getAllNotes(); // Fetch notes after updating pin status
       } else {
         toast.error(res.data.message);
       }
     } catch (error) {
       toast.error(error.message);
-      console.log("Error updating pin status:", error.response?.data || error.message);
     }
   };
-  
 
   return (
     <>
@@ -181,7 +180,7 @@ const Home = () => {
           onClose={() => setOpenAddEditModal({ isShown: false, type: "add", data: null })}
           noteData={openAddEditModal.data}
           type={openAddEditModal.type}
-          getAllNotes={getAllNotes}
+          getAllNotes={getAllNotes} // Pass the getAllNotes function
         />
       </Modal>
     </>
