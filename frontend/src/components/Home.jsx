@@ -8,7 +8,7 @@ import Navbar from "../components/Navbar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import apiUrl from "../api";
-
+import Cookies from 'js-cookie';
 const Home = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [allNotes, setAllNotes] = useState([]);
@@ -33,7 +33,8 @@ const Home = () => {
   // Function to get all notes from the server
   const getAllNotes = async () => {
     try {
-      const token = JSON.parse(localStorage.getItem("currentUser"))?.token;
+      // const token = JSON.parse(localStorage.getItem("currentUser"))?.token;
+      const token = Cookies.get('acces_token');
       console.log("Token being sent:", token);
       const res = await axios.get(`${apiUrl}/api/note/all`, {
         headers:{
