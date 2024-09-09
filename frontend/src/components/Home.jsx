@@ -24,6 +24,7 @@ const Home = () => {
   // Fetch the user info from localStorage
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
+    console.log("Stored User:", storedUser);
     if (storedUser) {
       setUserInfo(storedUser);
     }
@@ -33,6 +34,7 @@ const Home = () => {
   const getAllNotes = async () => {
     try {
       const token = JSON.parse(localStorage.getItem("currentUser"))?.token;
+      console.log("Token being sent:", token);
       const res = await axios.get(`${apiUrl}/api/note/all`, {
         headers:{
           Authorization: `Bearer ${token}`
