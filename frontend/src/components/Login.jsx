@@ -4,7 +4,7 @@ import { validateEmail } from "../utils/helper";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Navbar from "./Navbar";
-
+import apiUrl from "../api";
 const PasswordInput = ({ value, onChange }) => {
   return (
     <input
@@ -41,7 +41,7 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/signin",
+        `${apiUrl}/api/auth/signin`,
         { email, password },
         { withCredentials: true }
       );

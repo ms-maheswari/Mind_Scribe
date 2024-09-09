@@ -4,7 +4,7 @@ import { validateEmail } from "../utils/helper"
 import axios from "axios"
 import { toast } from "react-toastify"
 import Navbar from "./Navbar"
-
+import apiUrl from "../api"
 // A simple PasswordInput component
 const PasswordInput = ({ value, onChange }) => {
   return (
@@ -49,7 +49,7 @@ const Signup = () => {
     // sign up api
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/signup",
+        `${apiUrl}/api/auth/signup`,
         { username: name, email, password },
         { withCredentials: true }
       )

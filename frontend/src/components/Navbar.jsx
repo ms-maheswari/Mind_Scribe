@@ -4,7 +4,7 @@ import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { toast } from "react-toastify";
 import axios from "axios";
-
+import apiUrl from "../api";
 // Utility function: getInitials
 const getInitials = (name) => {
   if (!name) return "";
@@ -44,7 +44,7 @@ const Navbar = ({ onSearchNote, handleClearSearch }) => {
 
   const handleLogout = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/auth/signout", {
+      const res = await axios.get(`${apiUrl}/api/auth/signout`, {
         withCredentials: true,
       });
 

@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import apiUrl from "../api";
 const Home = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [allNotes, setAllNotes] = useState([]);
@@ -31,7 +31,7 @@ const Home = () => {
 
   const getAllNotes = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/note/all", {
+      const res = await axios.get(`${apiUrl}/api/note/all`, {
         withCredentials: true,
       });
       setAllNotes(res.data.notes);
@@ -57,7 +57,7 @@ const Home = () => {
 
     try {
       const res = await axios.delete(
-        "http://localhost:5000/api/note/delete/" + noteId,
+        `${apiUrl}/api/note/delete/` + noteId,
         { withCredentials: true }
       );
 
@@ -74,7 +74,7 @@ const Home = () => {
 
   const onSearchNote = async (query) => {
     try {
-      const res = await axios.get("http://localhost:5000/api/note/search", {
+      const res = await axios.get(`${apiUrl}/api/note/search`, {
         params: { query },
         withCredentials: true,
       });
@@ -100,7 +100,7 @@ const Home = () => {
   
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/note/update-note-pinned/${noteId}`,
+        `${apiUrl}/api/note/update-note-pinned/${noteId}`,
         { isPinned: !noteData.isPinned },
         { withCredentials: true } // This ensures cookies are sent with the request
       );
