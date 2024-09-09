@@ -29,6 +29,7 @@ const Home = () => {
     
   
   useEffect(() => {
+    
   const getAllNotes = async () => {
     try {
       const res = await axios.get(`${apiUrl}/api/note/all`, {
