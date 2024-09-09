@@ -99,7 +99,7 @@ app.post('/api/auth/signin', async (req, res, next) => {
       return next(errorHandler(401, 'Wrong credentials'));
     }
 
-    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     const { password: pass, ...rest } = validUser._doc;
 
     res.cookie('access_token', token, {
