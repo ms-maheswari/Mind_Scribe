@@ -30,7 +30,8 @@ app.use(cors({
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-  const token = Cookies.get('access_token');
+  // Retrieve the token from the cookies (server-side)
+  const token = req.cookies.access_token;
   console.log("Token received:", token);  // Debugging line to check if token is received
 
   if (!token) {
@@ -46,6 +47,7 @@ const verifyToken = (req, res, next) => {
     next();
   });
 };
+
 
 // Error handler function to create error objects
 const errorHandler = (statusCode, message) => {
