@@ -12,7 +12,8 @@ const Home = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [allNotes, setAllNotes] = useState([]);
     const [isSearch, setIsSearch] = useState(false);
-  
+    const [error, setError] = useState(null); 
+    
     const navigate = useNavigate();
     const [openAddEditModal, setOpenAddEditModal] = useState({
       isShown: false,
