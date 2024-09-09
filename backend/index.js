@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs';
 import User from './models/usermodel.js';
 import Note from './models/notemodel.js';
-
+import Cookies from 'js-cookie';
 // Load environment variables from .env file
 dotenv.config();
 
@@ -25,14 +25,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
   origin: 'https://mind-scribe-phi.vercel.app',  // Your frontend URL
-  credentials: true,  // Allows sending of cookies
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true  // Allows sending of cookies
 }));
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-  const token = req.cookies.access_token;
+  const token = Cookies.get('access_token');
   console.log("Token received:", token);  // Debugging line to check if token is received
 
   if (!token) {
