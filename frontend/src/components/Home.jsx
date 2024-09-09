@@ -32,15 +32,24 @@ const Home = () => {
   // Function to get all notes from the server
   const getAllNotes = async () => {
     try {
+      const token = JSON.parse(localStorage.getItem("currentUser"))?.token;
       const res = await axios.get(`${apiUrl}/api/note/all`, {
+        headers:{
+          Authorization: `Bearer ${token}`
+        },
         withCredentials: true, // Ensures cookies are sent
       });
       setAllNotes(res.data.notes);
     } catch (error) {
+      if (error.response.status === 401) {
+      toast.error("Session expired. Please log in again.");
+      navigate("/login"); // Redirect to login page
+    } else {
       console.error("Fetch Notes Error:", error.response?.data || error.message);
       setError(error.response?.data?.message || error.message);
     }
-  };
+  }
+};
 
   // Fetch notes on component load
   useEffect(() => {
