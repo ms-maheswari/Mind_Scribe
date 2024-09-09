@@ -23,7 +23,7 @@ const app = express();
 // Middleware to parse JSON, cookies, and handle CORS
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: 'https://mindscribe-ipr2oq7pv-msmaheswaris-projects.vercel.app', credentials: true }));
+app.use(cors({ origin: 'https://mindscribe-lovat.vercel.app', credentials: true }));
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
