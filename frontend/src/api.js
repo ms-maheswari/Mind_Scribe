@@ -1,4 +1,3 @@
-// const apiUrl = "https://mindscribe-backend.vercel.app";
-const apiUrl = "http://localhost:5000";
+const apiUrl = "https://mindscribe-backend.vercel.app";
 
 export default apiUrl;
