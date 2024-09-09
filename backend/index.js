@@ -110,6 +110,7 @@ app.post('/api/auth/signin', async (req, res, next) => {
       success: true,
       message: 'Login successful!',
       user: rest,
+      token: token
     });
   } catch (error) {
     next(error);
