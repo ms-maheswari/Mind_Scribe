@@ -24,45 +24,31 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    if (!password) {
-      setError("Please enter the password");
-      return;
-    }
-
-    setError("");
-
-    try {
-      const res = await axios.post(
-        `${apiUrl}/api/auth/signin`,
-        { email, password },
-        { withCredentials: true }
-      );
-
-      if (!res.data.success) {
-        toast.error(res.data.message);
-        return;
-      }
-
-      toast.success(res.data.message);
-
-      // Save user info to localStorage
-      localStorage.setItem("currentUser", JSON.stringify(res.data.user));
-
-      // Navigate to home after login
+const handleLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post(
+      `${apiUrl}/api/auth/signin`,
+      { email, password },
+      { withCredentials: true }
+    );
+    console.log("Login Response:", res.data); // Check if the token is here
+    if (res.data.success) {
+      // Store token and user data in localStorage
+      localStorage.setItem("currentUser", JSON.stringify({
+        userId: res.data.user._id,
+        token: res.data.token, // Ensure this is coming from the backend
+      }));
+      toast.success("Login successful");
       navigate("/home");
-    } catch (error) {
-      toast.error("Invalid email or password");
-      setError(error.message);
+    } else {
+      toast.error(res.data.message);
     }
-  };
+  } catch (error) {
+    toast.error("Invalid email or password");
+  }
+};
+
 
   return (
     <>
