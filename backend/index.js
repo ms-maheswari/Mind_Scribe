@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs';
 import User from './models/usermodel.js';
 import Note from './models/notemodel.js';
-import Cookies from 'js-cookie';
+
 // Load environment variables from .env file
 dotenv.config();
 
