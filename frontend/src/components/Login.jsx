@@ -1,21 +1,19 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { validateEmail } from "../utils/helper";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Navbar from "./Navbar";
 import apiUrl from "../api";
-const PasswordInput = ({ value, onChange }) => {
-  return (
-    <input
-      type="password"
-      placeholder="Password"
-      className="input-box"
-      value={value}
-      onChange={onChange}
-    />
-  );
-};
+
+const PasswordInput = ({ value, onChange }) => (
+  <input
+    type="password"
+    placeholder="Password"
+    className="input-box"
+    value={value}
+    onChange={onChange}
+  />
+);
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -24,81 +22,80 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-const handleLogin = async (e) => {
-  e.preventDefault();
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-  try {
-    const res = await axios.post(
-      `${apiUrl}/api/auth/signin`,
-      { email, password },
-      { withCredentials: true }
-    );
+    try {
+      const res = await axios.post(
+        `${apiUrl}/api/auth/signin`,
+        { email, password },
+        { withCredentials: true }
+      );
 
-    console.log("Login Response:", res.data);
+      console.log("Login Response:", res.data);
 
-    if (!res.data.success) {
-      toast.error(res.data.message);
-      return;
+      if (!res.data.success) {
+        toast.error(res.data.message);
+        return;
+      }
+
+      const token = res.data.token;  // Ensure token is in response body
+      if (!token) {
+        throw new Error("Token is missing in the login response");
+      }
+
+      localStorage.setItem("currentUser", JSON.stringify({
+        userId: res.data.user._id,
+        token: token,  // Store token
+        email: res.data.user.email,
+        username: res.data.user.username
+      }));
+
+      toast.success("Login successful");
+
+      navigate("/home");
+    } catch (error) {
+      toast.error("Invalid email or password");
+      setError(error.message);
     }
-
-    const token = res.data.token;  // Ensure token is in response body
-    if (!token) {
-      throw new Error("Token is missing in the login response");
-    }
-
-    localStorage.setItem("currentUser", JSON.stringify({
-      userId: res.data.user._id,
-      token: token,  // Store token
-      email: res.data.user.email,
-      username: res.data.user.username
-    }));
-
-    toast.success("Login successful");
-
-    navigate("/home");
-  } catch (error) {
-    toast.error("Invalid email or password");
-    setError(error.message);
-  }
-};
-
+  };
 
   return (
     <>
-    <Navbar />
-    <div className="flex items-center justify-center mt-28">
-      <div className="w-96 border rounded bg-white px-7 py-10">
-        <form onSubmit={handleLogin}>
-          <h4 className="text-2xl mb-7">Login</h4>
+      <Navbar />
+      <div className="flex items-center justify-center mt-28">
+        <div className="w-96 border rounded bg-white px-7 py-10">
+          <form onSubmit={handleLogin}>
+            <h4 className="text-2xl mb-7">Login</h4>
 
-          <input
-            type="text"
-            placeholder="Email"
-            className="input-box"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+            <input
+              type="text"
+              placeholder="Email"
+              className="input-box"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-          <PasswordInput
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+            <PasswordInput
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-          {error && <p className="text-red-500 text-sm pb-1">{error}</p>}
+            {error && <p className="text-red-500 text-sm pb-1">{error}</p>}
 
-          <button type="submit" className="btn-primary">
-            LOGIN
-          </button>
+            <button type="submit" className="btn-primary">
+              LOGIN
+            </button>
 
-          <p className="text-sm text-center mt-4">
-            Not registered yet?{" "}
-            <Link to={"/signup"} className="font-medium text-[#2B85FF] underline">
-              Create an account
-            </Link>
-          </p>
-        </form>
+            <p className="text-sm text-center mt-4">
+              Not registered yet?{" "}
+              <Link to={"/signup"} className="font-medium text-[#2B85FF] underline">
+                Create an account
+              </Link>
+            </p>
+          </form>
+        </div>
       </div>
-    </div>
     </>
   );
 };
