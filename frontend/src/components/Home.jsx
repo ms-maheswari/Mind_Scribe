@@ -28,7 +28,7 @@ const Home = () => {
     }, []);
     
   
-
+  useEffect(() => {
   const getAllNotes = async () => {
     try {
       const res = await axios.get(`${apiUrl}/api/note/all`, {
@@ -36,16 +36,11 @@ const Home = () => {
       });
       setAllNotes(res.data.notes);
 
-      // if (res.data.success) {
-      //   setAllNotes(res.data.notes);
-      // } else {
-      //   console.log(res.data);
-      // }
     } catch (error) {
-      console.log(error);
+      console.error("Fetch Notes Error:", error.response?.data || error.message);
+      setError(error.response?.data?.message || error.message);
     }
   };
-  useEffect(() => {
     getAllNotes();
   }, []); 
   const handleEdit = (noteDetails) => {
