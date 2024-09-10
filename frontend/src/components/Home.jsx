@@ -22,6 +22,10 @@ const Home = () => {
     data: null,
   });
 
+  const getToken = () => {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    return currentUser?.token;
+  };
   // Fetch the user info from localStorage
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -34,8 +38,12 @@ const Home = () => {
   // Function to get all notes from the server
   const getAllNotes = async () => {
     try {
-      const token = Cookies.get('access_token');
-      console.log("Token being sent:", token);
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      const token = currentUser?.token;
+
+      if (!token) {
+        throw new Error("No token found. Please log in again.");
+      }
 
       const res = await axios.get(`${apiUrl}/api/note/all`, {
         headers: {
@@ -69,10 +77,16 @@ const Home = () => {
   // Delete a note
   const deleteNote = async (data) => {
     const noteId = data._id;
+    const token = getToken();
+
+    if (!token) {
+      toast.error("User is not authenticated. Please log in.");
+      return;
+    }
     try {
       const res = await axios.delete(`${apiUrl}/api/note/delete/${noteId}`, {
         headers: {
-          Authorization: `Bearer ${Cookies.get('access_token')}`
+          Authorization: `Bearer ${token}`, 
         },
         withCredentials: true,
       });
@@ -90,11 +104,17 @@ const Home = () => {
 
   // Search for notes
   const onSearchNote = async (query) => {
+    const token = getToken();
+
+    if (!token) {
+      toast.error("User is not authenticated. Please log in.");
+      return;
+    }
     try {
       const res = await axios.get(`${apiUrl}/api/note/search`, {
         params: { query },
         headers: {
-          Authorization: `Bearer ${Cookies.get('access_token')}`
+          Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
       });
@@ -119,13 +139,19 @@ const Home = () => {
   // Update the pin status of a note
   const updateIsPinned = async (noteData) => {
     const noteId = noteData._id;
+    const token = getToken();
+
+    if (!token) {
+      toast.error("User is not authenticated. Please log in.");
+      return;
+    }
     try {
       const res = await axios.put(
         `${apiUrl}/api/note/update-note-pinned/${noteId}`,
         { isPinned: !noteData.isPinned },
         {
           headers: {
-            Authorization: `Bearer ${Cookies.get('access_token')}`
+            Authorization: `Bearer ${token}`, 
           },
           withCredentials: true,
         }

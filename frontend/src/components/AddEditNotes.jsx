@@ -10,21 +10,39 @@ const AddEditNotes = ({ onClose, noteData, type, getAllNotes }) => {
   const [tags, setTags] = useState(noteData?.tags || [])
   const [error, setError] = useState(null)
 
+  // Get the token from localStorage
+  const getToken = () => {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    return currentUser?.token;
+  };
+
   //   Edit Note
   const editNote = async () => {
-    const noteId = noteData._id
+    const noteId = noteData._id;
+    const token = getToken();
+
+    if (!token) {
+      setError("User is not authenticated. Please log in.");
+      return;
+    }
 
     try {
-      const res = await axios.post(
-        `http://localhost:5000/api/note/edit/${noteId}`,
+      const res = await axios.put(
+        `${apiUrl}/api/api/note/edit/${noteId}`,
         { title, content, tags },
-        { withCredentials: true }
-      )
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Pass token in the headers
+          },
+          withCredentials: true,
+      
+        }
+      );
 
       if (res.data.success === false) {
         setError(res.data.message)
         toast.error(res.data.message)
-        return
+        return;
       }
 
       toast.success(res.data.message)
@@ -39,17 +57,29 @@ const AddEditNotes = ({ onClose, noteData, type, getAllNotes }) => {
 
   //   Add Note
   const addNewNote = async () => {
+    const token = getToken();
+
+    if (!token) {
+      setError("User is not authenticated. Please log in.");
+      return;
+    }
+
     try {
       const res = await axios.post(
         `${apiUrl}/api/note/add`,
         { title, content, tags },
-        { withCredentials: true }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Pass token in the headers
+          },
+          withCredentials: true,
+        }
       )
 
       if (res.data.success === false) {
-        setError(res.data.message)
-        toast.error(res.data.message)
-        return
+        setError(res.data.message);
+        toast.error(res.data.message);
+        return;
       }
 
       toast.success(res.data.message)

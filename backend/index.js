@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs';
 import User from './models/usermodel.js';
 import Note from './models/notemodel.js';
-import Cookies from 'js-cookie';
+
 // Load environment variables from .env file
 dotenv.config();
 
@@ -24,7 +24,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: 'https://mind-scribe-phi.vercel.app',  // Your frontend URL
+  origin: 'http://localhost:3000',  // Your frontend URL
   credentials: true,  // Allows sending of cookies
   allowedHeaders: ['Content-Type', 'Authorization'] 
 }));
@@ -168,6 +168,99 @@ app.get('/api/note/all', verifyToken, async (req, res, next) => {
   }
 });
 
+
+// Route to edit a note by noteId for the authenticated user
+app.put('/api/note/edit/:id', verifyToken, async (req, res, next) => {
+  const { id } = req.params;  // The note ID from the URL
+  const { title, content, tags } = req.body;  // The updated note data
+  const userId = req.user.id;  // Get user ID from the verified token
+
+  if (!title || !content) {
+    return next(errorHandler(400, 'Title and content are required'));
+  }
+
+  try {
+    const note = await Note.findOneAndUpdate(
+      { _id: id, userId },  // Match the note by ID and ensure it belongs to the authenticated user
+      { title, content, tags },  // Update fields
+      { new: true }  // Return the updated note
+    );
+
+    if (!note) {
+      return next(errorHandler(404, 'Note not found or user unauthorized'));
+    }
+
+    res.status(200).json({ success: true, message: 'Note updated successfully', note });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Route to update the pin status of a note
+app.put('/api/note/update-note-pinned/:id', verifyToken, async (req, res, next) => {
+  const { id } = req.params;  // Get the note ID from URL
+  const { isPinned } = req.body;  // Get the new pin status from request body
+  const userId = req.user.id;  // Get the user ID from the JWT token
+
+  try {
+    const note = await Note.findOneAndUpdate(
+      { _id: id, userId },
+      { isPinned },  // Update the pin status
+      { new: true }  // Return the updated note
+    );
+
+    if (!note) {
+      return next(errorHandler(404, 'Note not found or user unauthorized'));
+    }
+
+    res.status(200).json({ success: true, message: 'Pin status updated successfully', note });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Route to search notes by query (title or content)
+app.get('/api/note/search', verifyToken, async (req, res, next) => {
+  const { query } = req.query;
+  const userId = req.user.id;
+
+  if (!query) {
+    return next(errorHandler(400, 'Search query is required'));
+  }
+
+  try {
+    // Perform case-insensitive search on both title and content
+    const notes = await Note.find({
+      userId,  // Search only in the notes that belong to the authenticated user
+      $or: [
+        { title: { $regex: query, $options: 'i' } },
+        { content: { $regex: query, $options: 'i' } }
+      ]
+    });
+
+    res.status(200).json({ success: true, message: 'Notes fetched successfully', notes });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Route to delete a note by noteId for the authenticated user
+app.delete('/api/note/delete/:id', verifyToken, async (req, res, next) => {
+  const { id } = req.params;  // The note ID from the URL
+  const userId = req.user.id;  // Get user ID from the verified token
+
+  try {
+    const note = await Note.findOneAndDelete({ _id: id, userId });  // Match the note by ID and ensure it belongs to the authenticated user
+
+    if (!note) {
+      return next(errorHandler(404, 'Note not found or user unauthorized'));
+    }
+
+    res.status(200).json({ success: true, message: 'Note deleted successfully' });
+  } catch (error) {
+    next(error);
+  }
+});
 // Global error handling middleware
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
