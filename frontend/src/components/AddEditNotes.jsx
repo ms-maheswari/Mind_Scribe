@@ -28,7 +28,7 @@ const AddEditNotes = ({ onClose, noteData, type, getAllNotes }) => {
 
     try {
       const res = await axios.put(
-        `${apiUrl}/api/api/note/edit/${noteId}`,
+        `${apiUrl}/api/note/edit/${noteId}`,
         { title, content, tags },
         {
           headers: {
