@@ -1,4 +1,3 @@
-// const apiUrl = "https://backend-iota-sepia-49.vercel.app";
-const apiUrl = "http://localhost:5000"
+const apiUrl = "https://mind-scribe-backend.vercel.app"
 
 export default apiUrl;
