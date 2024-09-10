@@ -24,7 +24,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:3000',  // Your frontend URL
+  origin: 'https://mind-scribe-xi.vercel.app',  // Your frontend URL
   credentials: true,  // Allows sending of cookies
   allowedHeaders: ['Content-Type', 'Authorization'] 
 }));
